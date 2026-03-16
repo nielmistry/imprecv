@@ -9,7 +9,7 @@
     )
 
     set list(
-        spacing: uservars.linespacing
+        spacing: uservars.linespacing,
     )
 
     set par(
@@ -23,6 +23,14 @@
 // show rules
 #let showrules(uservars, doc) = {
     // Uppercase section headings
+    show heading.where(
+        level: 3
+    ): it => block(width: 100%)[
+        #v(-0.75em)
+        #set align(left)
+        #set text(style: "italic", weight: "regular")
+        #it.body
+    ]
     show heading.where(
         level: 2,
     ): it => block(width: 100%)[
@@ -119,17 +127,24 @@
 }
 
 #let cvwork(info, title: "Work Experience", isbreakable: true) = {
-    if ("work" in info) and (info.work != none) {block[
+    let work_no = 0
+    if ("work" in info) and (info.work != none) { 
+        block[
         == #title
         #for w in info.work {
+            // if work_no != 0 {
+            //     line(length: 100%, stroke: (paint: silver, thickness: 1pt, dash: "dashed"))
+            // }
             block(width: 100%, breakable: isbreakable)[
                 // Line 1: Company and Location
                 #if ("url" in w) and (w.url != none) [
-                    *#link(w.url)[#w.organization]* #h(1fr) *#w.location* \
+                    #underline[*#link(w.url)[#w.organization]*] #h(1fr) *#w.location* \
                 ] else [
-                    *#w.organization* #h(1fr) *#w.location* \
+                    #underline[*#w.organization*] #h(1fr) *#w.location* \
                 ]
             ]
+
+            work_no = work_no + 1
             // Create a block layout for each work entry
             let index = 0
             for p in w.positions {
@@ -139,12 +154,21 @@
                     #let start = utils.strpdate(p.startDate)
                     #let end = utils.strpdate(p.endDate)
                     // Line 2: Position and Date Range
-                    #text(style: "italic")[#p.position] #h(1fr)
+                    #text(weight: "medium")[*#p.position*] #h(1fr)
                     #utils.daterange(start, end) \
-                    // Highlights or Description
-                    #for hi in p.highlights [
-                        - #eval(hi, mode: "markup")
+                    #if type(p.highlights.first()) == dictionary [
+                        #for cat in p.highlights [
+                            === #cat.category
+                            #for hi in cat.items [
+                                - #eval(hi, mode: "markup")
+                            ]    
+                        ] 
+                    ] else [
+                        #for hi in p.highlights [
+                            - #eval(hi, mode: "markup")
+                        ]
                     ]
+                   
                 ]
                 index = index + 1
             }

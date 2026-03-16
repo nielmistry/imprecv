@@ -156,11 +156,45 @@
                 },
                 "highlights": {
                   "type": [
+                    "object",
                     "array",
                     "null"
                   ],
+                  "properties": {
+                    "category": {
+                      "type": "string"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
                   "items": {
-                    "type": "string"
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "required": [
+                          "category",
+                          "items"
+                        ],
+                        "properties": {
+                          "category": {
+                            "type": "string"
+                          },
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }
